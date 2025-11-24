@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 import Navigation from './Calendar/Navigation.js';
@@ -390,6 +390,13 @@ export type CalendarProps = {
    */
   showWeekNumbers?: boolean;
   /**
+   * Whether to show Month View. Defaults `false`.
+   *
+   * @default false
+   * @example true
+   */
+  showMonthView?: boolean;
+  /**
    * Class name(s) that will be applied to a given calendar item (day on month view, month on year view and so on).
    *
    * @example 'class1 class2'
@@ -424,6 +431,15 @@ export type CalendarProps = {
    * @example 'year'
    */
   view?: View;
+
+  /**
+   * Props for the month view.
+   *
+   * @example { monthView: { showWeekNumbers: true } }
+   */
+  slotProps?: {
+    monthView?: React.ComponentProps<typeof MonthView>;
+  };
 };
 
 function toDate(value: Date | string): Date {
@@ -602,6 +618,22 @@ function areDatesEqual(date1?: Date | null, date2?: Date | null) {
   return date1 instanceof Date && date2 instanceof Date && date1.getTime() === date2.getTime();
 }
 
+/**
+ * Returns an array of next 12 months and their headings.
+ */
+function getMonths(initialDate: Date) {
+  const currentDate = getBegin('month', initialDate);
+  const months = [];
+  for (let i = 0; i < 13; i++) {
+    const month = new Date(currentDate);
+    month.setMonth(month.getMonth() + i);
+    months.push(month);
+  }
+  return {
+    months,
+  };
+}
+
 const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttributes<unknown>> =
   forwardRef(function Calendar(props, ref) {
     const {
@@ -657,11 +689,13 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
       showNeighboringDecade,
       showNeighboringMonth = true,
       showWeekNumbers,
+      showMonthView,
       tileClassName,
       tileContent,
       tileDisabled,
       value: valueProps,
       view: viewProps,
+      slotProps,
     } = props;
 
     const [activeStartDateState, setActiveStartDateState] = useState<Date | null | undefined>(
@@ -692,9 +726,20 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
         value: valueProps,
         view: viewProps,
       });
+    const initialDateRef = useRef<Date | null>(null);
 
     const value: Value = (() => {
       const rawValue = (() => {
+        if (showMonthView && valueProps !== undefined) {
+          // if showMonthView is true, it doesn't honor the valueState
+          // return value can not be an array with single value
+          // so return the first value of the array if it contains only one value
+          // else return the array
+          return Array.isArray(valueProps) && getIsSingleValue(valueProps)
+            ? valueProps[0]
+            : valueProps;
+        }
+
         // In the middle of range selection, use value from state
         if (selectRange && getIsSingleValue(valueState)) {
           return valueState;
@@ -707,11 +752,12 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
         return null;
       }
 
-      return Array.isArray(rawValue)
+      const values = Array.isArray(rawValue)
         ? (rawValue.map((el) => (el !== null ? toDate(el) : null)) as Range<Date | null>)
         : rawValue !== null
           ? toDate(rawValue)
           : null;
+      return values;
     })();
 
     const valueType = getValueType(maxDetail);
@@ -996,6 +1042,53 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
       setHoverState(null);
     }
 
+    const renderMonthView = (initialDate: Date) => {
+      const onClick = drillDownAvailable ? drillDown : onChange;
+
+      const { months } = getMonths(initialDate);
+
+      const commonProps = {
+        hover,
+        locale,
+        maxDate,
+        minDate,
+        onClick,
+        onMouseOver: selectRange ? onMouseOver : undefined,
+        tileClassName,
+        tileContent,
+        tileDisabled,
+        value,
+        valueType,
+        ...slotProps,
+      };
+
+      return months.map((month) => {
+        const activeStartDateForMonth = getBegin(view, month);
+
+        return (
+          <MonthView
+            key={month.getTime()}
+            calendarType={calendarType}
+            formatDay={formatDay}
+            formatLongDate={formatLongDate}
+            formatShortWeekday={formatShortWeekday}
+            formatWeekday={formatWeekday}
+            onClickWeekNumber={onClickWeekNumber}
+            onMouseLeave={selectRange ? onMouseLeave : undefined}
+            showFixedNumberOfWeeks={
+              typeof showFixedNumberOfWeeks !== 'undefined'
+                ? showFixedNumberOfWeeks
+                : showDoubleView
+            }
+            showNeighboringMonth={showNeighboringMonth}
+            showWeekNumbers={showWeekNumbers}
+            activeStartDate={activeStartDateForMonth}
+            {...commonProps}
+          />
+        );
+      });
+    };
+
     useImperativeHandle(
       ref,
       () => ({
@@ -1086,8 +1179,26 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
       }
     }
 
+    const renderActualContent = () => {
+      if (!initialDateRef.current) {
+        initialDateRef.current = minDate || activeStartDate;
+      }
+      const initialDate = initialDateRef.current;
+
+      if (showMonthView) {
+        return renderMonthView(initialDate);
+      }
+
+      return (
+        <>
+          {renderContent()}
+          {showDoubleView ? renderContent(true) : null}
+        </>
+      );
+    };
+
     function renderNavigation() {
-      if (!showNavigation) {
+      if (!showNavigation || showMonthView) {
         return null;
       }
 
@@ -1139,8 +1250,7 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
           onBlur={selectRange ? onMouseLeave : undefined}
           onMouseLeave={selectRange ? onMouseLeave : undefined}
         >
-          {renderContent()}
-          {showDoubleView ? renderContent(true) : null}
+          {renderActualContent()}
         </div>
       </div>
     );

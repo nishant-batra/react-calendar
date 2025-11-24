@@ -1,5 +1,5 @@
 {
-  "name": "react-calendar",
+  "name": "iui-react-calendar",
   "version": "6.0.0",
   "description": "Ultimate calendar for your React app.",
   "type": "module",
@@ -55,6 +55,7 @@
     "playwright": "^1.55.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tslib": "^2.6.0",
     "typescript": "^5.9.2",
     "vitest": "^4.0.1",
     "vitest-browser-react": "^2.0.0"
@@ -79,7 +80,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wojtekmaj/react-calendar.git",
+    "url": "git+https://github.com/chahatbahl/react-calendar.git",
     "directory": "packages/react-calendar"
   },
   "funding": "https://github.com/wojtekmaj/react-calendar?sponsor=1"
