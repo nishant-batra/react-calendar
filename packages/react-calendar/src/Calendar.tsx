@@ -6,12 +6,21 @@ import clsx from 'clsx';
 import Navigation from './Calendar/Navigation.js';
 import CenturyView from './CenturyView.js';
 import DecadeView from './DecadeView.js';
-import YearView from './YearView.js';
 import MonthView from './MonthView.js';
+import YearView from './YearView.js';
 
 import { getBegin, getBeginNext, getEnd, getValueRange } from './shared/dates.js';
 import { between } from './shared/utils.js';
 
+import type {
+  formatDay as defaultFormatDay,
+  formatLongDate as defaultFormatLongDate,
+  formatMonth as defaultFormatMonth,
+  formatMonthYear as defaultFormatMonthYear,
+  formatShortWeekday as defaultFormatShortWeekday,
+  formatWeekday as defaultFormatWeekday,
+  formatYear as defaultFormatYear,
+} from './shared/dateFormatter.js';
 import type {
   Action,
   CalendarType,
@@ -29,16 +38,6 @@ import type {
   Value,
   View,
 } from './shared/types.js';
-
-import type {
-  formatDay as defaultFormatDay,
-  formatLongDate as defaultFormatLongDate,
-  formatMonth as defaultFormatMonth,
-  formatMonthYear as defaultFormatMonthYear,
-  formatShortWeekday as defaultFormatShortWeekday,
-  formatWeekday as defaultFormatWeekday,
-  formatYear as defaultFormatYear,
-} from './shared/dateFormatter.js';
 
 const baseClassName = 'react-calendar';
 const allViews = ['century', 'decade', 'year', 'month'] as const;
@@ -76,6 +75,12 @@ export type CalendarProps = {
    * @example ['class1', 'class2 class3']
    */
   className?: ClassName;
+  /**
+   * The test ID used for testing purposes.
+   *
+   * @example 'clock'
+   */
+  'data-testid'?: string;
   /**
    * The beginning of a period that shall be displayed by default. If you wish to use react-calendar in a controlled way, use `activeStartDate` instead.
    *
@@ -636,6 +641,7 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
       allowPartialRange,
       calendarType,
       className,
+      'data-testid': dataTestId,
       defaultActiveStartDate,
       defaultValue,
       defaultView,
@@ -1234,6 +1240,7 @@ const Calendar: React.ForwardRefExoticComponent<CalendarProps & React.RefAttribu
           showDoubleView && `${baseClassName}--doubleView`,
           className,
         )}
+        data-testid={dataTestId}
         ref={inputRef}
       >
         {renderNavigation()}

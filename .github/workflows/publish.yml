@@ -32,25 +32,21 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Install Corepack
+        run: npm install -g corepack
 
       - name: Install dependencies
         run: yarn --immutable
 
       - name: Publish with latest tag
-        if: github.event.release.prelease == false
-        run: yarn npm publish --tag latest --provenance
+        if: github.event.release.prerelease == false
+        run: yarn npm publish --tag latest
         working-directory: packages/react-calendar
-        env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish with next tag
-        if: github.event.release.prelease == true
-        run: yarn npm publish --tag next --provenance
+        if: github.event.release.prerelease == true
+        run: yarn npm publish --tag next
         working-directory: packages/react-calendar
-        env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
