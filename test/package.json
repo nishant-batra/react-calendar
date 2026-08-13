@@ -21,15 +21,15 @@
   "dependencies": {
     "@wojtekmaj/date-utils": "^2.0.2",
     "get-user-locale": "^3.0.0",
-    "react": "^18.2.0",
+    "react": "^19.2.0",
     "react-calendar": "workspace:packages/react-calendar",
-    "react-dom": "^18.2.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
-    "@types/react": "*",
-    "@vitejs/plugin-react": "^4.6.0",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.11"
+    "@biomejs/biome": "2.5.8",
+    "@types/react": "^19.2.0",
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.0.16"
   }
 }

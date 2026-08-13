@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
   "files": {
     "includes": [
       "**",
@@ -72,6 +72,16 @@
       },
       "suspicious": {
         "noConsole": "warn"
+      },
+      "style": {
+        "noCommonJs": "error",
+        "useBlockStatements": "error",
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType"
+          }
+        }
       }
     }
   },

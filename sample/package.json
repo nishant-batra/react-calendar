@@ -15,13 +15,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "react": "^18.2.0",
+    "react": "^19.2.0",
     "react-calendar": "latest",
-    "react-dom": "^18.2.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.6.0",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.11"
-  }
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.0.16"
+  },
+  "packageManager": "yarn@4.17.1"
 }
