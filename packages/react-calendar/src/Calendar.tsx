@@ -392,6 +392,7 @@ export type CalendarProps = {
   /**
    * Whether to show Month View. Defaults `false`.
    *
+   * @see MonthList for a stateless equivalent that scrolls rather than pages.
    * @default false
    * @example true
    */
@@ -433,12 +434,13 @@ export type CalendarProps = {
   view?: View;
 
   /**
-   * Props for the month view.
+   * Overrides for the month view, merged over the props `Calendar` derives itself.
+   * Partial, so pass only what you want to change.
    *
    * @example { monthView: { showWeekNumbers: true } }
    */
   slotProps?: {
-    monthView?: React.ComponentProps<typeof MonthView>;
+    monthView?: Partial<React.ComponentProps<typeof MonthView>>;
   };
 };
 
